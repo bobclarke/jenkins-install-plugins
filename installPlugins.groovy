@@ -10,6 +10,11 @@
 //----------------------------------------------------------------------
 // Setup
 //----------------------------------------------------------------------
+if( args.length < 5 ){
+	println '\nUsage: groovy installPlugins.groovy <jenkins host> <jenkins port> <username> <password> "comma separated list of plugin short names"'
+	println 'Exmaple: groovy installPlugins.groovy localhost 8080 mylogin mypass "cucumber-trends-report,terraform,emma"\n'
+	System.exit(0)
+}
 def jenkinsHost = args[0]
 def jenkinsPort = args[1]
 def jenkinsUser = args[2]
