@@ -1,4 +1,13 @@
 //----------------------------------------------------------------------
+// installPlugins.groovy
+// Author: Bob Clarke
+// Date 26/01/2017
+//
+// Description: Allows user to specify a comma separated list of 
+// plug-ins (short name) to be installed
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
 // Setup
 //----------------------------------------------------------------------
 def jenkinsHost = args[0]
@@ -15,9 +24,14 @@ def authString = "${jenkinsUser}:${jenkinsPass}".getBytes().encodeBase64().toStr
 // Main
 //----------------------------------------------------------------------
 pluginDir = '/Users/Shared/Jenkins/Home/plugins'
+
+// Get an array of installed plugins
 installedPlugins = getInstalledPlugins( slurper, addr, authString )
+
+// Construct an array of plugins tha need to be installed based on user input 
 pluginsToInstall = pluginsRequested.split(/,/)
 
+// Compare the arrays
 pluginsToInstall.each{ requestedPlugin ->
 	println "Checking if ${requestedPlugin} is installed"
 	if ( installedPlugins.shortName.contains( requestedPlugin ) ){
@@ -36,23 +50,33 @@ pluginsToInstall.each{ requestedPlugin ->
 private downloadPlugin( requestedPlugin ){
 
 	// Download hpi file
+	// Need to do a better job at checking HTTP status code here. 
+	// Presently, if the url is incorrect the error is not caught
 	def fileName = pluginDir +'/'+ requestedPlugin + '.hpi'
 	def url = 'http://updates.jenkins-ci.org/latest/' + requestedPlugin + '.hpi'  
         def file = new File( fileName ).newOutputStream()  
         file << new URL(url).openStream()  
         file.close()  
-	downloadDependancies( fileName )
+
+	// Call the getDependencies method
+	println "Checking dependancies for ${fileName}"
+	getDependancies( fileName )
 }
 
-private downloadDependancies( fileName ){
-	println "Checking dependancies for ${fileName}"
+private getDependancies( fileName ){
+
+	// Check the manifest in the hpi file for dependencies
 	new java.util.jar.JarFile( fileName ).manifest.mainAttributes.entrySet().each {
    		if ( it.key.toString().toLowerCase().contains( "Dependencies".toLowerCase() ) ) {
+
+			// Split out the dependency name from the version
 			def deps = it.value.split(/,/)
 			deps.each{ dep ->
 				def tmp = dep.split(/:/)
 				def depName = tmp[0]
 				println "Found dependency: ${dep}"
+
+				// Check if dependency is already installed
 			        if ( installedPlugins.shortName.contains( depName ) ){
                 			println "${depName} dependency is already installed - skipping"
 				} else {
