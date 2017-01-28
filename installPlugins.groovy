@@ -5,6 +5,10 @@
 //
 // Description: Allows user to specify a comma separated list of 
 // plug-ins (short name) to be installed
+//
+// Usage: groovy installPlugins.groovy <jenkins host> <jenkins port> <username> <password> "comma separated list of plugin short names"'
+// Exmaple: groovy installPlugins.groovy localhost 8080 mylogin mypass "cucumber-trends-report,terraform,emma"
+// Assumes groovy 2.* is installed 
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -13,7 +17,7 @@
 if( args.length < 5 ){
 	println '\nUsage: groovy installPlugins.groovy <jenkins host> <jenkins port> <username> <password> "comma separated list of plugin short names"'
 	println 'Exmaple: groovy installPlugins.groovy localhost 8080 mylogin mypass "cucumber-trends-report,terraform,emma"\n'
-	System.exit(0)
+	System.exit(1)
 }
 def jenkinsHost = args[0]
 def jenkinsPort = args[1]
