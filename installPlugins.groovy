@@ -1,6 +1,5 @@
 //----------------------------------------------------------------------
 // installPlugins.groovy
-// Author: Bob Clarke
 // Date 26/01/2017
 //
 // Description: Allows user to specify a comma separated list of 
